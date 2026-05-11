@@ -289,18 +289,23 @@ install_dokploy() {
 
     sleep 4
 
+    # 1. Targeted Path Edit: Matches 'address' only if it follows an indentation
+    # This ensures you hit entryPoints.web/websecure without quotes.
+    sed -i '/web:/,/address:/ s/address: .*/address: :80\/tcp/' /etc/dokploy/traefik/traefik.yml
+    sed -i '/websecure:/,/address:/ s/address: .*/address: :443\/tcp/' /etc/dokploy/traefik/traefik.yml
+
+    # 2. Complete Removal: Deletes the http3 line and any value it has
+    sed -i '/http3:/d' /etc/dokploy/traefik/traefik.yml
+
     docker run -d \
-        --name dokploy-traefik \
-        --restart always \
-        -v /etc/dokploy/traefik/traefik.yml:/etc/traefik/traefik.yml \
-        -v /etc/dokploy/traefik/dynamic:/etc/dokploy/traefik/dynamic \
-        -v /var/run/docker.sock:/var/run/docker.sock:ro \
-        -p 80:80/tcp \
-        -p 443:443/tcp \
-        traefik:v3.6.7 \
-        --entrypoints.web.address=:80/tcp \
-        --entrypoints.websecure.address=:443/tcp \
-        --entrypoints.websecure.http3=false
+      --name dokploy-traefik \
+      --restart always \
+      -v /etc/dokploy/traefik/traefik.yml:/etc/traefik/traefik.yml \
+      -v /etc/dokploy/traefik/dynamic:/etc/dokploy/traefik/dynamic \
+      -v /var/run/docker.sock:/var/run/docker.sock:ro \
+      --publish mode=host,target=80,published=80,protocol=tcp \
+      --publish mode=host,target=443,published=443,protocol=tcp \
+      traefik:v3.6.7
     
     docker network connect dokploy-network dokploy-traefik
 

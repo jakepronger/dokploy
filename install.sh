@@ -297,7 +297,10 @@ install_dokploy() {
         -v /var/run/docker.sock:/var/run/docker.sock:ro \
         -p 80:80/tcp \
         -p 443:443/tcp \
-        traefik:v3.6.7
+        traefik:v3.6.7 \
+        --entrypoints.web.address=:80/tcp \
+        --entrypoints.websecure.address=:443/tcp \
+        --entrypoints.websecure.http3=false
     
     docker network connect dokploy-network dokploy-traefik
 

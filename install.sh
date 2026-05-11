@@ -295,7 +295,7 @@ install_dokploy() {
     sed -i '/websecure:/,/address:/ s/address: .*/address: :443\/tcp/' /etc/dokploy/traefik/traefik.yml
 
     # Deletes the http3 line and the line following it
-    sed -i '/http3:/{N;d;}' /etc/dokploy/traefik/traefik.yml
+    sed -i '/^  http3:/,/^  [^ ]/ { /^  [^ ]/!d; }' /etc/dokploy/traefik/traefik.yml
 
     docker run -d \
       --name dokploy-traefik \

@@ -9,6 +9,9 @@ systemctl disable dnf-makecache.timer firewalld kdump tuned rpcbind oracle-cloud
 dnf clean all
 rm -rf /var/cache/dnf
 
+# 3. Silence the login screen
+#echo "" > /etc/motd #IS THIS NEEDED? CAN JUST REMOVE?
+
 dnf install -y dnf-utils
 dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
